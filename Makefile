@@ -32,7 +32,7 @@ install: compile uninstall
 	cp examples/zmq-examples.gpr.inst ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada/zmq-examples.gpr
 
 samples:
-	${GNATMAKE} -P examples/zmq-examples.gpr
+	${GNATMAKE} -P examples/zmq-examples.gpr ${GNATFLAGS}
 
 generate:
 	rm -rf src/gen/*
@@ -58,9 +58,3 @@ dist:
 	cd .dist; tar -czf ../zeromq-ada-$(shell helpers/getinfo --binding-version).tgz *
 	rm -rf .dist
 
-	
-	
-	
-							
-	
-																									
