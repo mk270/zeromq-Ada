@@ -1,4 +1,4 @@
-with "../zmq.gpr";
+with "zmq.gpr";
 with "xmlada.gpr";
 with "gnatcoll.gpr";
 
