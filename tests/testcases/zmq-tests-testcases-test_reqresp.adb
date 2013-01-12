@@ -1,7 +1,7 @@
 with GNAT.Source_Info;
 with Ada.Strings.Unbounded;
 with AUnit.Assertions; use AUnit.Assertions;
-package body ZMQ.Tests.Testcases.Test_Pubsub is
+package body ZMQ.Tests.Testcases.Test_REQRESP is
    use AUnit;
    use Ada.Strings.Unbounded;
 
@@ -21,21 +21,20 @@ package body ZMQ.Tests.Testcases.Test_Pubsub is
 
 
 
-   Test_Port : constant String := "inproc://pub-sub";
-
    -------------------------
    --  initialize
    -------------------------
    procedure Initialize (Test : in out AUnit.Test_Cases.Test_Case'Class) is
       T : Test_Case renames Test_Case (Test);
    begin
-      T.Pub.Initialize (T.Ctx, Sockets.PUB);
 
-      T.Sub.Initialize (T.Ctx, Sockets.SUB);
-      T.Sub.Set_Message_Filter ("");
+      T.Sub.Initialize (T.Ctx, Sockets.REP);
+      T.Sub.Bind ("inproc://req");
 
-      T.Sub.Bind (Test_Port);
-      T.Pub.Connect (Test_Port);
+      T.Pub.Initialize (T.Ctx, Sockets.REQ);
+      T.Pub.Connect ("inproc://req");
+
+
    end Initialize;
 
    -------------------------
@@ -44,19 +43,11 @@ package body ZMQ.Tests.Testcases.Test_Pubsub is
    procedure Send (Test : in out AUnit.Test_Cases.Test_Case'Class) is
       T     : Test_Case renames Test_Case (Test);
       Msg   : Ada.Strings.Unbounded.Unbounded_String;
-      task Rec is
-         entry Has_Data;
-      end Rec;
-      task body Rec is
-      begin
-         T.Sub.Recv (Msg);
-         accept Has_Data;
-      end Rec;
-
    begin
-      delay 0.01;
       T.Pub.Send (MSG_STRING);
-      Rec.Has_Data;
+      T.Sub.Recv (Msg);
+      T.Sub.Send (Msg);
+      T.Pub.Recv (Msg);
       Assert (Msg = MSG_STRING, "Error");
    end Send;
 
@@ -82,4 +73,4 @@ package body ZMQ.Tests.Testcases.Test_Pubsub is
       Register_Routine (T, Finalize'Access, "Finalize");
    end Register_Tests;
 
-end ZMQ.Tests.TestCases.Test_Pubsub;
+end ZMQ.Tests.TestCases.Test_REQRESP;

@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
---                   Copyright (c) 2011 Per Sandberg                         --
+--                   Copyright (c) 2010 Per Sandberg                         --
 --                                                                           --
 --  Permission is hereby granted, free of charge, to any person obtaining a  --
 --  copy of this software and associated documentation files                 --
@@ -22,32 +22,34 @@
 --  OTHER DEALINGS IN THE SOFTWARE.                                          --
 -------------------------------------------------------------------------------
 
+--  Hello World server in Ada
+--  Binds REP socket to tcp:--*:5555
+--  Expects "Hello" from client, replies with "World"
+
+
 with ZMQ.Sockets;
 with ZMQ.Contexts;
-with ZMQ.Messages;
-with Ada.Text_IO;
-with GNAT.Sockets;
-procedure ZMQ.examples.prompt is
+with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
-   ctx : aliased Contexts.Context;
-   s   : Sockets.Socket;
-
+procedure HWServer is
+   Context  : ZMQ.Contexts.Context;
+   Socket   : ZMQ.Sockets.Socket;
+   inbuffer : Ada.Strings.Unbounded.Unbounded_String;
 begin
-   s.Initialize (ctx, Sockets.PUB);
-   s.Connect ("tcp://localhost:5555");
+   --  Prepare our context and socket
+   Socket.Initialize (Context, ZMQ.Sockets.REP);
+   Socket.Bind ("tcp://*:5555");
 
-   Read_Loop : for i in 1..100 loop
-      Ada.Text_IO.Put_Line (">");
-      declare
-         textbuf : constant String :=  "Test";
-         message_to_send : constant String := "hej" & ASCII.NUL & GNAT.Sockets.Host_Name & ":" & textbuf;
-         query        : ZMQ.Messages.Message;
-      begin
-         query.Initialize(message_to_send);
-         s.Send (query);
-         query.Finalize;
-         delay 0.02;
-      end;
-   end loop Read_Loop;
-   s.Send (END_MESSAGE);
-end ZMQ.Examples.prompt;
+   loop
+      --  Wait for next request from client
+      inbuffer := Socket.Recv;
+      Put_Line ("Received request:" & To_String (inbuffer));
+
+      --  Do some 'work'
+      delay 1.0;
+
+      --  Send reply back to client
+      Socket.Send ("World");
+   end loop;
+end HWServer;
