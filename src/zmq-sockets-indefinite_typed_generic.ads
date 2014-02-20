@@ -2,11 +2,11 @@
 --                                                                           --
 --                             0MQ Ada-binding                               --
 --                                                                           --
---                          Z M Q . D E V I C E S                            --
+--  Z M Q . S O C K E T S . I N D E F I N I T E _ T Y P E D _ G E N E R I C  --
 --                                                                           --
---                                  B o d y                                  --
+--                                  S p e c                                  --
 --                                                                           --
---            Copyright (C) 2010-2011, per.sandberg@bredband.net             --
+--            Copyright (C) 2013-2020, per.s.sandberg@bahnhof.se             --
 --                                                                           --
 --  Permission is hereby granted, free of charge, to any person obtaining a  --
 --  copy of this software and associated documentation files                 --
@@ -28,32 +28,28 @@
 --  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR    --
 --  OTHER DEALINGS IN THE SOFTWARE.                                          --
 -------------------------------------------------------------------------------
-------------------------------------------------------------------------------
 
-with ZMQ.Low_Level;
-with Interfaces.C; use Interfaces.C;
+with Ada.Streams;
+generic
+   type Element_Type (<>) is private;
+   Initial_Size : Ada.Streams.Stream_Element_Offset := 1024;
+package ZMQ.Sockets.Indefinite_Typed_Generic is
+--  This package provides a wraper for first serializeing any object
+--  then send the serialized data over the socket.
 
-package body ZMQ.Devices is
+   type Socket is new ZMQ.Sockets.Socket with private;
 
-   ----------------
-   -- initialize --
-   ----------------
-   type Device_Kind_map is array (Device_Kind) of int;
-   Map : constant Device_Kind_map :=
-           (Streamer  => Low_Level.ZMQ_STREAMER,
-            Forwarder => Low_Level.ZMQ_FORWARDER,
-            Queue     => Low_Level.ZMQ_QUEUE);
-   procedure Initialize
-     (This      : in out Device;
-                         Kind      : Device_Kind;
-                         In_Socket  : ZMQ.Sockets.Socket;
-      Out_Ocket  : ZMQ.Sockets.Socket)
-   is
-   begin
-      This.Impl :=
-        Low_Level.zmq_device (Map (Kind),
-                              In_Socket.Get_Impl,
-                              Out_Ocket.Get_Impl);
-   end Initialize;
+   not overriding
+   procedure Send
+     (This  : in out Socket;
+      Msg   : Element_Type);
 
-end ZMQ.Devices;
+   not overriding
+   procedure Recv
+     (This       : in Socket;
+      Msg        : out Element_Type);
+private
+   type Socket is new ZMQ.Sockets.Socket with  record
+      Acutal_Initial_Size : Ada.Streams.Stream_Element_Offset := Initial_Size;
+   end record;
+end ZMQ.Sockets.Indefinite_Typed_Generic;

@@ -1,4 +1,5 @@
 
+
 ifndef PREFIX
   PREFIX=$(dir $(shell dirname `which gnatls`))
 endif
@@ -6,10 +7,11 @@ LIBDIR ?= ${PREFIX}/lib
 DESTDIR ?= 
 GNATFLAGS ?=
 ADA_PROJECT_DIR ?= ${PREFIX}/lib/gnat
-GNATMAKE = gnatmake -p -f -R 
+GNATMAKE = gnatmake ${GNATFLAGS} -p -f -R 
+
 compile:
 	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=static ${GNATFLAGS}
-	 ${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=relocatable ${GNATFLAGS}
+	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=relocatable ${GNATFLAGS}
 
 uninstall:
 	rm -rf ${DESTDIR}/${PREFIX}/include/zmq ${DESTDIR}/${LIBDIR}/zmq ${DESTDIR}/${ADA_PROJECT_DIR}/zmq.gpr
@@ -30,27 +32,38 @@ install: compile uninstall
 	mkdir -p ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada
 	cp examples/zmq-examples*.ad* ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada
 	cp examples/zmq-examples.gpr.inst ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada/zmq-examples.gpr
+
 all: compile install
 
 samples:
 	${GNATMAKE} -P examples/zmq-examples.gpr ${GNATFLAGS}
 
 generate:
-	mkdir -p .temp
-	echo "#include <zmq.h>">.temp/x.cpp
-	gprbuild -p -c -Pgenerate.gpr x.cpp
+	rm -rf src/gen/*
+	mkdir -p .temp src/gen
+	echo "#include <zmq.h>">.temp/x.c
+	(cd .temp;g++  -c -fdump-ada-spec x.c)
+	python rename.py .temp/zmq_h.ads
+	gnatchop -w -gnat12 .temp/zmq_h.ads src/gen
+	gnat pretty -P zmq.gpr -rf   -M128  src/gen/*.ads
 
-	python renames.py .temp/zmq_h.ads
-	gnatchop -w -gnat05 .temp/zmq_h.ads  src
-	gnatpp  -rnb -M127 src/zmq-low_level.ads -cargs -gnat05
-
-        
 clean:
 	rm -rf .obj
 	${MAKE} -C tests clean
-	
-setup:
-	${MAKE} -C eBindings install
 
 test:
 	${MAKE} -C tests "GNATFLAGS=${GNATFLAGS}"
+dist:
+	rm -rf .dist
+	gprbuild -p -P helpers/zmq-helpers.gpr -XLIBRARY_TYPE=static
+	echo "|$(shell helpers/getinfo --binding-version)|"
+	git clone . .dist/zeromq-ada-$(shell helpers/getinfo --binding-version)
+	rm -rf .dist/zeromq-ada-$(shell helpers/getinfo --binding-version)/.git
+	cd .dist; tar -czf ../zeromq-ada-$(shell helpers/getinfo --binding-version).tgz *
+	rm -rf .dist
+
+Makefile.config:Makefile  #IGNORE
+	echo "PREFIX=$(dir $(shell dirname `which gnatls`))" >${@}
+	
+	
+							

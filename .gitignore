@@ -11,3 +11,10 @@ metrix.xml
 gnatcheck.out
 gnatcheck-source-list.out
 
+*.tgz
+.dist
+Makefile.config
+gnatinspect.db
+fontconfig
+temp.out
+.#*#

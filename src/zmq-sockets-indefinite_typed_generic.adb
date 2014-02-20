@@ -2,9 +2,9 @@
 --                                                                           --
 --                             0MQ Ada-binding                               --
 --                                                                           --
---                          Z M Q . C O N T E X T S                          --
+--  Z M Q . S O C K E T S . I N D E F I N I T E _ T Y P E D _ G E N E R I C  --
 --                                                                           --
---                                  S p e c                                  --
+--                                B o d y                                    --
 --                                                                           --
 --            Copyright (C) 2013-2020, per.s.sandberg@bahnhof.se             --
 --                                                                           --
@@ -28,59 +28,43 @@
 --  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR    --
 --  OTHER DEALINGS IN THE SOFTWARE.                                          --
 -------------------------------------------------------------------------------
+with ZMQ.Utilities.Memory_Streams;
+package body ZMQ.Sockets.Indefinite_Typed_Generic is
+
+   ----------
+   -- Send --
+   ----------
+
+   procedure Send
+     (This  : in out Socket;
+      Msg   : Element_Type)
+   is
+      S    : aliased ZMQ.Utilities.Memory_Streams.Dynamic_Memory_Stream
+        (Initial_Size, ZMQ.Utilities.Memory_Streams.As_Needed);
+   begin
+      Element_Type'Write (S'Access, Msg);
+      This.Send (S.Get_Address, Integer (S.Get_Length));
+      if This.Acutal_Initial_Size < S.Get_Length then
+         This.Acutal_Initial_Size := S.Get_Length;
+      end if;
+   end Send;
 
 
-with Ada.Finalization;
-with System;
-package ZMQ.Contexts is
-   IO_THREADS_DFLT  : constant := 1;
-   MAX_SOCKETS_DFLT : constant := 1024;
+   ----------
+   -- Recv --
+   ----------
 
-   type Context is tagged limited private;
-   type Any_Context is access all Context'Class;
+   procedure Recv
+     (This       : in Socket;
+      Msg        : out Element_Type)
+   is
+      Temp : Messages.Message;
+      S    : aliased ZMQ.Utilities.Memory_Streams.Memory_Stream;
+   begin
+      This.Recv (Temp);
+      S.Set_Address (Temp.GetData);
+      S.Set_Length (Ada.Streams.Stream_Element_Offset (Temp.GetSize));
+      Element_Type'Read (S'Access, Msg);
+   end Recv;
 
-
-
-   not overriding
-   procedure Set_number_of_IO_threads
-     (This : in out Context; Threads : Natural := 1);
-   not overriding
-   function get_number_of_IO_threads
-     (This : in out Context) return Natural;
-   --  Specifies the size of the ØMQ thread pool to handle I/O operations.
-   --  If your application is using only the inproc transport for messaging
-   --  you may set this to zero, otherwise set it to at least one.
-   --  This option only applies before creating any sockets on the context.
-
-   not overriding
-   procedure Set_maximum_number_of_sockets
-     (This : in out Context; Count : Positive := 1024);
-   not overriding
-   function Get_maximum_number_of_sockets
-     (This : in out Context) return Natural;
-   --  Sets the maximum number of sockets allowed on the context.
-
-   not overriding
-   procedure Set_IPv6
-     (This : in out Context; Enable : Boolean := False);
-   not overriding
-   function Get_IPv6 (This : in out Context) return Boolean;
-   --  When IPv6 is enabled, a socket will connect to,
-   --  or accept connections from, both IPv4 and IPv6 hosts.
-
-   function Is_Connected (This : Context) return Boolean;
-
-   function GetImpl (This : Context) return System.Address;
-   --  "Private" function to get lowlevel implementation handle.
-
-private
-   type Context is new Ada.Finalization.Limited_Controlled with record
-      c : System.Address := System.Null_Address;
-   end record;
-   overriding
-   procedure Initialize (This : in out Context);
-
-   overriding
-   procedure Finalize (This : in out Context);
-
-end ZMQ.Contexts;
+end ZMQ.Sockets.Indefinite_Typed_Generic;

@@ -1,5 +1,12 @@
 -------------------------------------------------------------------------------
---                   Copyright (c) 2010 Per Sandberg                         --
+--                                                                           --
+--                             0MQ Ada-binding                               --
+--                                                                           --
+--             Z M Q . S O C K E T S . T Y P E D _ G E N E R I C             --
+--                                                                           --
+--                                  B o d y                                  --
+--                                                                           --
+--            Copyright (C) 2013-2020, per.s.sandberg@bahnhof.se             --
 --                                                                           --
 --  Permission is hereby granted, free of charge, to any person obtaining a  --
 --  copy of this software and associated documentation files                 --
@@ -22,34 +29,30 @@
 --  OTHER DEALINGS IN THE SOFTWARE.                                          --
 -------------------------------------------------------------------------------
 
---  Hello World server in Ada
---  Binds REP socket to tcp:--*:5555
---  Expects "Hello" from client, replies with "World"
+generic
+   type Element_Type is private;
+   pragma Compile_Time_Error
+     (Element_Type'Has_Access_Values, "No access values allowed in Element");
+package ZMQ.Sockets.Typed_Generic is
+   type Typed_Socket is new ZMQ.Sockets.Socket with private;
 
+   not overriding
+   procedure Send
+     (This  : in out Typed_Socket;
+      Msg   : Element_Type;
+      Flags : Socket_Flags := No_Flags);
 
-with ZMQ.Sockets;
-with ZMQ.Contexts;
-with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+   not overriding
+   function Recv
+     (This       : in Typed_Socket;
+      Flags      : Socket_Flags := No_Flags)
+      return  Element_Type;
 
-procedure HWServer is
-   Context  : ZMQ.Contexts.Context;
-   Socket   : ZMQ.Sockets.Socket;
-   inbuffer : Ada.Strings.Unbounded.Unbounded_String;
-begin
-   --  Prepare our context and socket
-   Socket.Initialize (Context, ZMQ.Sockets.REP);
-   Socket.Bind ("tcp://*:5555");
-
-   loop
-      --  Wait for next request from client
-      inbuffer := Socket.Recv;
-      Put_Line ("Received request:" & To_String (inbuffer));
-
-      --  Do some 'work'
-      delay 1.0;
-
-      --  Send reply back to client
-      Socket.Send ("World");
-   end loop;
-end HWServer;
+   not overriding
+   procedure Recv
+     (This       : in Typed_Socket;
+      Msg        : out Element_Type;
+      Flags      : Socket_Flags := No_Flags);
+private
+   type Typed_Socket is new ZMQ.Sockets.Socket with null record;
+end  ZMQ.Sockets.Typed_Generic;

@@ -1,9 +1,8 @@
 %define debug_package %{nil}
-
-Name:       zeromq-ada
-Version:    2.1.0
-Release:    9.24032011git%{?dist}
-Summary:    Ada binding for zeromq
+Name:		zeromq-ada
+Version:	3.2.0
+Release:	1%{?dist}
+Summary:	Ada binding for zeromq
 Group:      System Environment/Libraries
 License:    GPLv2+
 URL:        http://zeromq.org

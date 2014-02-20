@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --                                                                           --
---  Copyright 2007 Per Sandberg <per.sandberg@bredband.net>                  --
+--            Copyright (C) 2013-2020, per.s.sandberg@bahnhof.se             --
 --                                                                           --
 --  Permission is hereby granted, free of charge, to any person obtaining a  --
 --  copy of this software and associated documentation files                 --
@@ -34,7 +34,9 @@ package body ZMQ.Utilities.Memory_Streams is
    overriding
    procedure Dump
      (This        : in Memory_Stream;
-      Full_Buffer : in Boolean := False) is
+      Full_Buffer : in Boolean := False;
+      Outf        : in Text_IO.File_Access := Text_IO.Standard_Output) is
+      pragma Unreferenced (Outf);
       Buffer : Large_Buffer_Access renames This.Buffer.As_Pointer;
    begin
       if Full_Buffer then
@@ -161,7 +163,6 @@ package body ZMQ.Utilities.Memory_Streams is
    procedure Read
      (This   : not null access Ada.Streams.Root_Stream_Type'Class;
       Item   : out Memory_Stream) is
-      pragma Unreferenced (This, Item);
    begin
       raise Program_Error with
         "Its not possible to read into a memory stream using 'read";
