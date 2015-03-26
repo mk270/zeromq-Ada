@@ -8,8 +8,8 @@ Makefile.config: configure
 GNATMAKE = gnatmake ${GNATFLAGS} -p -f -R 
 
 compile:
-	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=static
-	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=relocatable
+	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=static ${GNATFLAGS}
+	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=relocatable ${GNATFLAGS}
 
 uninstall:
 	rm -rf ${DESTDIR}/${PREFIX}/include/zmq ${DESTDIR}/${LIBDIR}/zmq ${DESTDIR}/${ADA_PROJECT_DIR}/zmq.gpr
@@ -48,7 +48,7 @@ clean:
 	${MAKE} -C tests clean
 
 test:
-	${MAKE} -C tests
+	${MAKE} -C tests "GNATFLAGS=${GNATFLAGS}"
 dist:
 	rm -rf .dist
 	gprbuild -p -P helpers/zmq-helpers.gpr -XLIBRARY_TYPE=static

@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Name:		zeromq-ada
 Version:	3.2.0
 Release:	1%{?dist}
@@ -21,13 +22,6 @@ ExclusiveArch: %{ix86} x86_64 ia64 ppc ppc64 alpha
 
 %description
 Ada bindings for zeromq
-
-%prep
-%setup -q -n zeromq-ada
-%patch0 -p1
-
-%build
-make %{?_smp_mflags}
 
 %package devel
 Summary:        Devel package for Ada binding for zeromq
@@ -67,7 +61,6 @@ chrpath --delete %{buildroot}%{_libdir}/zmq/relocatable/libzmqAda.so.%{version}
 %dir %{_libdir}/zmq/relocatable
 %{_libdir}/zmq/relocatable/libzmqAda.so.%{version}
 %{_libdir}/libzmqAda.so.*
->>>>>>> Update spec file
 
 
 %files devel
