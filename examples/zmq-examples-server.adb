@@ -37,7 +37,7 @@ begin
    ctx.Set_number_of_IO_threads (1);
 
    --   Create a ZMQ_REP socket to receive requests and send replies
-   s.Initialize (ctx, Sockets.REP);
+   s.Initialize (ctx, ZMQ.Sockets.REP);
 
    --   Bind to the TCP transport and port 5555 on the 'lo' interface
    s.Bind ("tcp://lo:5555");
