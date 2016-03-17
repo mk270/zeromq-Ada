@@ -5,7 +5,7 @@ all: compile
 Makefile.config: configure
 	./configure
 
-GNATMAKE = gnatmake ${GNATFLAGS} -p -f -R 
+GNATMAKE = gnatmake ${GNATFLAGS} -p -f -R
 
 compile: .obj/static/zmq.o .obj/relocatable/zmq.o
 
@@ -49,10 +49,11 @@ generate:
 
 clean:
 	rm -rf .obj
-	#${MAKE} -C tests clean
+#	${MAKE} -C tests clean
 
 test:
 	${MAKE} -C tests "GNATFLAGS=${GNATFLAGS}"
+
 dist:
 	rm -rf .dist
 	gprbuild -p -P helpers/zmq-helpers.gpr -XLIBRARY_TYPE=static
@@ -61,4 +62,3 @@ dist:
 	rm -rf .dist/zeromq-ada-$(shell helpers/getinfo --binding-version)/.git
 	cd .dist; tar -czf ../zeromq-ada-$(shell helpers/getinfo --binding-version).tgz *
 	rm -rf .dist
-
