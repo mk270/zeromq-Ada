@@ -64,5 +64,6 @@ dist:
 	echo "|$(shell helpers/getinfo --binding-version)|"
 	git clone . .dist/zeromq-ada-$(shell helpers/getinfo --binding-version)
 	rm -rf .dist/zeromq-ada-$(shell helpers/getinfo --binding-version)/.git
-	cd .dist; tar -czf ../zeromq-ada-$(shell helpers/getinfo --binding-version).tgz *
+	cd .dist;\
+	  tar -czf ../zeromq-ada-$(shell helpers/getinfo --binding-version).tgz *
 	rm -rf .dist
