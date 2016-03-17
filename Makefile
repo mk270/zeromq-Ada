@@ -1,6 +1,6 @@
 -include Makefile.config
 
-all: compile install
+all: compile
 
 Makefile.config: configure
 	./configure
