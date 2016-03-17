@@ -7,8 +7,12 @@ Makefile.config: configure
 
 GNATMAKE = gnatmake ${GNATFLAGS} -p -f -R 
 
-compile:
+compile: .obj/static/zmq.o .obj/relocatable/zmq.o
+
+.obj/static/zmq.o:
 	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=static ${GNATFLAGS}
+
+.obj/relocatable/zmq.o:
 	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=relocatable ${GNATFLAGS}
 
 uninstall:
