@@ -49,7 +49,7 @@ generate:
 
 clean:
 	rm -rf .obj
-	${MAKE} -C tests clean
+	#${MAKE} -C tests clean
 
 test:
 	${MAKE} -C tests "GNATFLAGS=${GNATFLAGS}"
