@@ -16,7 +16,9 @@ compile: .obj/static/zmq.o .obj/relocatable/zmq.o
 	${GNATMAKE} -P zmq.gpr -XLIBRARY_TYPE=relocatable ${GNATFLAGS}
 
 uninstall:
-	rm -rf ${DESTDIR}/${PREFIX}/include/zmq ${DESTDIR}/${LIBDIR}/zmq ${DESTDIR}/${ADA_PROJECT_DIR}/zmq.gpr
+	rm -rf ${DESTDIR}/${PREFIX}/include/zmq \
+		${DESTDIR}/${LIBDIR}/zmq \
+		${DESTDIR}/${ADA_PROJECT_DIR}/zmq.gpr
 
 install: compile uninstall
 	mkdir -p ${DESTDIR}/${PREFIX}/include/zmq
@@ -28,12 +30,14 @@ install: compile uninstall
 	cp -f src/zmq.ad* ${DESTDIR}/${PREFIX}/include/zmq
 	cp -f src/zmq-*.ad* ${DESTDIR}/${PREFIX}/include/zmq
 	chmod -w ${DESTDIR}/${PREFIX}/include/zmq/*.ad?
-#	(cd ${DESTDIR}/${PREFIX}/lib; for i in `find -name lib*.so*`; do ln -s $$i ; done)s
+#	(cd ${DESTDIR}/${PREFIX}/lib;\
+		 for i in `find -name lib*.so*`; do ln -s $$i ; done)
 	cp zmq.gpr.inst ${DESTDIR}/${ADA_PROJECT_DIR}/zmq.gpr
 
 	mkdir -p ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada
 	cp examples/zmq-examples*.ad* ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada
-	cp examples/zmq-examples.gpr.inst ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada/zmq-examples.gpr
+	cp examples/zmq-examples.gpr.inst \
+		${DESTDIR}/${PREFIX}/share/zmq/examples/Ada/zmq-examples.gpr
 
 samples:
 	${GNATMAKE} -P examples/zmq-examples.gpr ${GNATFLAGS}
