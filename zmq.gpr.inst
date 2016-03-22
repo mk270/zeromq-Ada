@@ -39,8 +39,8 @@ project ZMQ is
 
    for Library_Name use "zmqAda";
    for Library_Version use "lib" & project'Library_Name & ".so." & Version;
-   for Library_Dir use "../zmq/" & ZMQ_Kind;
-   for Source_Dirs use ("../../include/zmq");
+   for Library_Dir use "/usr/local/lib/zmq/" & ZMQ_Kind;
+   for Source_Dirs use ("/usr/local/include/zmq");
    for Externally_Built use "True";
    case ZMQ_Kind is
       when "static" =>
