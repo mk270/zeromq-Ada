@@ -45,8 +45,9 @@ begin
    loop
       declare
          Query : ZMQ.Messages.Message;
+         Size : Natural := 0;
       begin
-         Query.Initialize(0);
+         Query.Initialize (Size);
          --  Receive a message, blocks until one is available
          S.Recv (Query);
          --  Process the query

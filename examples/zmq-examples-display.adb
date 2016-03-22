@@ -40,7 +40,8 @@ begin
    Ada.Text_IO.Put_Line ("Connected");
    Read_Loop : loop
       declare
-         Buffer : constant String := Socket.Recv;
+         Buffer : constant String :=
+           Sockets.Recv (Socket, Sockets.No_Flags);
       begin
          Ada.Text_IO.Put_Line (Buffer);
          exit Read_Loop when Buffer = END_MESSAGE;

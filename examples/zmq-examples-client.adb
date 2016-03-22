@@ -51,8 +51,9 @@ begin
 
       declare
          resultset        : ZMQ.Messages.Message;
+         Size             : Natural := 0;
       begin
-         resultset.Initialize(0);
+         resultset.Initialize (Size);
          s.Recv (resultset);
          Put_Line ('"' & resultset.GetData & '"');
       end;
