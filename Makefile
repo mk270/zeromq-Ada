@@ -27,12 +27,11 @@ install: compile uninstall
 
 	cp -r lib/* ${DESTDIR}/${LIBDIR}/zmq
 
-	cp -f src/zmq.ad* ${DESTDIR}/${PREFIX}/include/zmq
-	cp -f src/zmq-*.ad* ${DESTDIR}/${PREFIX}/include/zmq
-	chmod -w ${DESTDIR}/${PREFIX}/include/zmq/*.ad?
+	cp -f .obj/include/* ${DESTDIR}/${PREFIX}/include/zmq
 #	(cd ${DESTDIR}/${PREFIX}/lib;\
 		 for i in `find -name lib*.so*`; do ln -s $$i ; done)
 	cp zmq.gpr.inst ${DESTDIR}/${ADA_PROJECT_DIR}/zmq.gpr
+	cp libzmq.gpr ${DESTDIR}/${ADA_PROJECT_DIR}/libzmq.gpr
 
 	mkdir -p ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada
 	cp examples/zmq-examples*.ad* ${DESTDIR}/${PREFIX}/share/zmq/examples/Ada
