@@ -84,6 +84,9 @@ project ZMQ is
                                     "ZMQ.Utilities",
                                     "ZMQ.Utilities.Memory_Streams");
    end case;
+
+   for Library_Src_Dir use ".obj/" & "include";
+
    package Builder is
       for Default_Switches ("ada") use ("-k", "-j0");
    end Builder;
