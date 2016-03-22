@@ -28,8 +28,7 @@ install: compile uninstall
 	cp -r lib/* ${DESTDIR}/${LIBDIR}/zmq
 
 	cp -f .obj/include/* ${DESTDIR}/${PREFIX}/include/zmq
-#	(cd ${DESTDIR}/${PREFIX}/lib;\
-		 for i in `find -name lib*.so*`; do ln -s $$i ; done)
+
 	cp zmq.gpr.inst ${DESTDIR}/${ADA_PROJECT_DIR}/zmq.gpr
 	cp libzmq.gpr ${DESTDIR}/${ADA_PROJECT_DIR}/libzmq.gpr
 
