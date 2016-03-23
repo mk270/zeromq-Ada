@@ -20,13 +20,7 @@ project ZMQ.Examples is
       for Executable("zmq-examples-server.adb")     use "server";
       for Executable("zmq-examples-hwserver.adb")   use "hwserver";
       for Executable("zmq-examples-multi_thread_server.adb") use "multi_thread_server";
-      for Default_Switches ("ada") use ZMQ.Builder'Default_Switches ("ada");
    end Builder;
-
-
-   package Compiler is
-      for Default_Switches ("ada") use ZMQ.Compiler'Default_Switches ("ada") & ("-gnatyyM128");
-   end Compiler;
 
    package Binder is
       for Default_Switches ("ada") use ("-E");
@@ -35,7 +29,5 @@ project ZMQ.Examples is
    package Check is
       for Default_Switches ("ada") use ("-rules", "-from=" & ZMQ'Project_Dir & "/zmq.rules");
    end Check;
-
-   package Ide renames ZMQ.Ide;
 
 end ZMQ.Examples;
